@@ -17,6 +17,7 @@
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
 #include <memory>
+#include <EEPROM.h>
 
 extern "C"
 {
@@ -75,6 +76,16 @@ class WiFiManager
 public:
   WiFiManager();
   ~WiFiManager();
+
+  int _webSocketPortAddress = 0;
+  int _webSocketIPAddress = 1;
+  String _webSocketPort = "5000";
+  String _webSocketIP = "";
+
+  int _serverPortAddress = 3;
+  int _serverIPAddress = 4;
+  String _serverPort = "3000";
+  String _serverIP = "";
 
   boolean autoConnect();
   boolean autoConnect(char const *apName, char const *apPassword = NULL);
@@ -135,6 +146,7 @@ private:
   const char *_apPassword = NULL;
   String _ssid = "";
   String _pass = "";
+
   unsigned long _configPortalTimeout = 0;
   unsigned long _connectTimeout = 0;
   unsigned long _configPortalStart = 0;

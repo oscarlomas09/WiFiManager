@@ -768,6 +768,9 @@ void WiFiManager::handleWifiSavePost()
   //SAVE/connect here
   _ssid = server->arg("ssid").c_str();
   _pass = server->arg("pass").c_str();
+  _webSocketIP = server->arg("ip").c_str();
+  _webSocketPort = server->arg("port").c_str();
+  // _webSocketPort = atoi(server->arg("port").c_str());
 
   //parameters
   for (int i = 0; i < _paramsCount; i++)
@@ -811,12 +814,12 @@ void WiFiManager::handleWifiSavePost()
   server->sendHeader("Access-Control-Allow-Methods", "POST");
   server->sendHeader("Access-Control-Allow-Origin", "*");
   server->sendHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  server->send(200, "text/plain", "{\"success\":true}");
+  server->send(200, "text/plain", "{\"success\":true,\"id\":\"" + String(ESP.getChipId()) + "\"}");
 
-  Serial.println(_ssid);
-  Serial.println(_pass);
-  Serial.println(ESP.getChipId());
-  DEBUG_WM(F("Sent wifi save POST page"));
+  EEPROM.begin(512);
+  // save values to EEPROM
+  EEPROM.put(_webSocketPortAddress, _webSocketPort);
+  EEPROM.put(_webSocketIPAddress, _webSocketIP);
 
   connect = true; //signal ready to connect/reset
 }
