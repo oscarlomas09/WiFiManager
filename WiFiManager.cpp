@@ -123,7 +123,7 @@ bool WiFiManager::addParameter(WiFiManagerParameter *p)
 
 void WiFiManager::setupConfigPortal()
 {
-  dnsServer.reset(new DNSServer());
+  //dnsServer.reset(new DNSServer());
   server.reset(new ESP8266WebServer(80));
 
   DEBUG_WM(F(""));
@@ -163,8 +163,11 @@ void WiFiManager::setupConfigPortal()
   DEBUG_WM(WiFi.softAPIP());
 
   /* Setup the DNS server redirecting all the domains to the apIP */
-  dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
-  dnsServer->start(DNS_PORT, "*", WiFi.softAPIP());
+  //dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
+  //dnsServer->start(DNS_PORT, "*", WiFi.softAPIP());
+
+  // to save values to memory
+  EEPROM.begin(512);
 
   /* Setup web pages: root, wifi config pages, SO captive portal detectors and not found. */
   server->on(String(F("/")), std::bind(&WiFiManager::handleRoot, this));
@@ -264,7 +267,7 @@ boolean WiFiManager::startConfigPortal(char const *apName, char const *apPasswor
       break;
 
     //DNS
-    dnsServer->processNextRequest();
+    //dnsServer->processNextRequest();
     //HTTP
     server->handleClient();
 
@@ -308,7 +311,7 @@ boolean WiFiManager::startConfigPortal(char const *apName, char const *apPasswor
   }
 
   server.reset();
-  dnsServer.reset();
+  //dnsServer.reset();
 
   return WiFi.status() == WL_CONNECTED;
 }
@@ -810,13 +813,14 @@ void WiFiManager::handleWifiSavePost()
     String sn = server->arg("sn");
     optionalIPFromString(&_sta_static_sn, sn.c_str());
   }
+  DEBUG_WM(_ssid);
+  DEBUG_WM(_pass);
 
   server->sendHeader("Access-Control-Allow-Methods", "POST");
   server->sendHeader("Access-Control-Allow-Origin", "*");
   server->sendHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   server->send(200, "text/plain", "{\"success\":true,\"id\":\"" + String(ESP.getChipId()) + "\"}");
 
-  EEPROM.begin(512);
   // save values to EEPROM
   EEPROM.put(_webSocketPortAddress, _webSocketPort);
   EEPROM.put(_webSocketIPAddress, _webSocketIP);

@@ -77,15 +77,15 @@ public:
   WiFiManager();
   ~WiFiManager();
 
-  int _webSocketPortAddress = 0;
-  int _webSocketIPAddress = 1;
+  int _webSocketPortAddress = 0; // should only need 16 bits
+  int _webSocketIPAddress = 4;   // needs at least 32 bits
   String _webSocketPort = "5000";
-  String _webSocketIP = "";
+  String _webSocketIP = "192.168.0.19";
 
-  int _serverPortAddress = 3;
-  int _serverIPAddress = 4;
+  int _serverPortAddress = 12;
+  int _serverIPAddress = 16;
   String _serverPort = "3000";
-  String _serverIP = "";
+  String _serverIP = "192.168.0.12";
 
   boolean autoConnect();
   boolean autoConnect(char const *apName, char const *apPassword = NULL);
